@@ -48,7 +48,7 @@ class PatientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         if (! Gate::allows('patient_create')) {
             return abort(401);
@@ -59,7 +59,9 @@ class PatientsController extends Controller
         $address_types = AddressType::pluck('name', 'id');
         $countries = Country::all();
 
-        return view('admin.patients.create', compact('enum_gender', 'contact_types', 'designation_types', 'address_types', 'countries'));
+        $redirect_to = $request->input('redirect_to');
+
+        return view('admin.patients.create', compact('enum_gender', 'contact_types', 'designation_types', 'address_types', 'countries', 'redirect_to'));
     }
 
     /**
@@ -124,6 +126,10 @@ class PatientsController extends Controller
                     }
                 }
             }
+        }
+
+        if ($request->input('redirect_to')) {
+            return redirect($request->input('redirect_to'));
         }
 
         return redirect()->route('admin.patients.index');

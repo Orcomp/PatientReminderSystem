@@ -99,7 +99,7 @@
             </div>
         </div>
     </div>
-
+    {{ Form::hidden('redirect_to', $redirect_to) }}
     {!! Form::submit(trans('global.app_save'), ['class' => 'btn btn-danger']) !!}
     {!! Form::close() !!}
 @stop

@@ -12,8 +12,15 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('patient_id', trans('global.contacts.fields.patient'), ['class' => 'control-label']) !!}
-                    {!! Form::select('patient_id', $patients, old('patient_id'), ['class' => 'form-control select2']) !!}
+                    {!! Form::label('patient_id', trans('global.contacts.fields.patient'), ['class' => 'control-label required']) !!}
+
+                    @isset($patient_id)
+                    {!! Form::select('patient_id', $patients, old('patient_id'), ['class' => 'form-control select2', 'required' => '', 'disabled' => '']) !!}
+                    {{ Form::hidden('patient_id', $patient_id) }}
+                    @else
+                    {!! Form::select('patient_id', $patients, old('patient_id'), ['class' => 'form-control select2', 'required' => '']) !!}
+                    @endisset
+
                     <p class="help-block"></p>
                     @if($errors->has('patient_id'))
                         <p class="help-block">

@@ -22,10 +22,31 @@ class AppointmentsController extends Controller
      */
     public function index(Request $request)
     {
+        $users = User::all();
         $staff_filter = array_map('intval', $request->get('staff', [Auth::id()]));
-        $appointments = Appointment::ofPatient()->whereIn('user_id', $staff_filter)->get();
 
-        $staff_members = User::all();
+        if (in_array('-1', $staff_filter)) {
+            $all_users = $users->map(function($user){
+                return ['id' => $user->id];
+            })->toArray();
+            $staff_filter = array_merge($staff_filter, $all_users);
+        }
+
+        if (in_array('-2', $staff_filter)) {
+            $all_doctors = User::whereHas('role', function($q){
+                $q->where('title', 'Doctor');
+            })->get(['id'])->toArray();
+            $staff_filter = array_merge($staff_filter, $all_doctors);
+        }
+
+        if (in_array('-3', $staff_filter)) {
+            $all_doctors = User::whereHas('role', function($q){
+                $q->where('title', 'Nurse');
+            })->get(['id'])->toArray();
+            $staff_filter = array_merge($staff_filter, $all_doctors);
+        }
+
+        $appointments = Appointment::ofPatient()->whereIn('user_id', $staff_filter)->get();
 
         $calendar_events = [];
         foreach ($appointments as $appointment) {
@@ -41,7 +62,7 @@ class AppointmentsController extends Controller
         $patient = Patient::find($request->input('patient_id'));
 
         return view('admin.appointments.index', compact('appointments', 'patient', 'calendar_events',
-            'staff_members', 'staff_filter'));
+            'users', 'staff_filter'));
     }
 
     /**
@@ -58,10 +79,10 @@ class AppointmentsController extends Controller
         $appointment_types = \App\AppointmentType::get()->pluck('name', 'id');
         $patients = \App\Patient::get()->pluck('full_name', 'id')->prepend('', '');
         $users = \App\User::get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
-        $redirect_to = $request['redirect_to'] ?? null;
-        $appointment_time = $request['date'] ?? null;
 
-        $patient_id = $request->input('patient_id') ?? null;
+        $redirect_to      = $request->input('redirect_to');
+        $appointment_time = $request->input('date');
+        $patient_id       = $request->input('patient_id');
 
         return view('admin.appointments.create', compact('appointment_types', 'patients', 'users', 'redirect_to', 'appointment_time', 'patient_id'));
     }
@@ -107,7 +128,8 @@ class AppointmentsController extends Controller
         $users = \App\User::get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
         $reasons = \App\RescheduleReason::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
         $contacted_contacts = \App\Contact::where('patient_id', $appointment->patient->id)->get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
-        $redirect_to = $request['redirect_to'] ?? null;
+
+        $redirect_to = $request->input('redirect_to');
 
         return view('admin.appointments.edit', compact(
             'appointment',

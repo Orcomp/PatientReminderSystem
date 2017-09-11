@@ -13,9 +13,10 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('patient_id', trans('global.appointments.fields.patient'), ['class' => 'control-label required']) !!}
-                    <a class="btn btn-xs btn-success" href="{{ route('admin.patients.create') }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-xs btn-success" href="{{ route('admin.patients.create', ['redirect_to' => url()->current()]) }}">@lang('global.app_add_new')</a>
 
                     @isset($patient_id)
+                    <a class="btn btn-xs btn-primary" href="{{ route('admin.patients.show', ['patient' => $patient_id]) }}">@lang('global.app_view')</a>
                     {!! Form::select('patient_id', $patients, old('patient_id'), ['class' => 'form-control select2', 'required' => '', 'disabled' => '']) !!}
                     {{ Form::hidden('patient_id', $patient_id) }}
                     @else

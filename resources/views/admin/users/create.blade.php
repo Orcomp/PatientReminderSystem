@@ -299,12 +299,6 @@
                 }
             }
         });
-
-        // invoke first contact and address open
-
-        $('.btn-contact').trigger('click');
-        $('.btn-address').trigger('click');
-
     });
     </script>
 

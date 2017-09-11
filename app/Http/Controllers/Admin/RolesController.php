@@ -38,7 +38,7 @@ class RolesController extends Controller
         if (! Gate::allows('role_create')) {
             return abort(401);
         }
-        
+
         $permissions = \App\Permission::get()->pluck('title', 'id');
 
 
@@ -76,7 +76,7 @@ class RolesController extends Controller
         if (! Gate::allows('role_edit')) {
             return abort(401);
         }
-        
+
         $permissions = \App\Permission::get()->pluck('title', 'id');
 
 
@@ -118,12 +118,12 @@ class RolesController extends Controller
         if (! Gate::allows('role_view')) {
             return abort(401);
         }
-        
+
         $permissions = \App\Permission::get()->pluck('title', 'id');
-$users = \App\User::whereHas('role',
-                    function ($query) use ($id) {
-                        $query->where('id', $id);
-                    })->get();
+        $users = \App\User::whereHas('role',
+            function ($query) use ($id) {
+                $query->where('id', $id);
+            })->get();
 
         $role = Role::findOrFail($id);
 

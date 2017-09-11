@@ -51,9 +51,11 @@ class TreatmentsController extends Controller
         $patients = \App\Patient::get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
         $treatment_types = \App\TreatmentType::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
         $treatment_stages = \App\TreatmentStage::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
-        $redirect_to = $request['redirect_to'] ?? null;
 
-        return view('admin.treatments.create', compact('patients', 'treatment_types', 'treatment_stages', 'redirect_to'));
+        $redirect_to = $request->input('redirect_to');
+        $patient_id  = $request->input('patient_id');
+
+        return view('admin.treatments.create', compact('patients', 'treatment_types', 'treatment_stages', 'redirect_to', 'patient_id'));
     }
 
     /**

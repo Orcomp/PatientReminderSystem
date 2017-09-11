@@ -50,9 +50,11 @@ class DiagnosesController extends Controller
 
         $patients = \App\Patient::get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
         $diagnose_types = \App\DiagnosesType::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
-        $redirect_to = $request['redirect_to'] ?? null;
 
-        return view('admin.diagnoses.create', compact('patients', 'diagnose_types', 'redirect_to'));
+        $redirect_to = $request->input('redirect_to');
+        $patient_id  = $request->input('patient_id');
+
+        return view('admin.diagnoses.create', compact('patients', 'diagnose_types', 'redirect_to', 'patient_id'));
     }
 
     /**

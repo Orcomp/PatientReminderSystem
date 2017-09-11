@@ -28,13 +28,16 @@
                 <div class="row">
                     <div class="col-md-4 col-md-offset-8">
                         <select class="form-control select2" multiple="multiple" required="" name="staff[]">
-                            @foreach($staff_members as $staff_member)
-                                <option value="{{ $staff_member->id }}"
-                                @if(in_array($staff_member->id, $staff_filter))
+                            <option value="-1" @if(in_array('-1', $staff_filter)) selected @endif>@lang('global.appointments.filters.staff')</option>
+                            <option value="-2" @if(in_array('-2', $staff_filter)) selected @endif>@lang('global.appointments.filters.doctors')</option>
+                            <option value="-3" @if(in_array('-3', $staff_filter)) selected @endif>@lang('global.appointments.filters.nurses')</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}"
+                                @if(in_array($user->id, $staff_filter))
                                     selected
                                 @endif
                                 >
-                                    {{ $staff_member->full_name }}
+                                    {{ $user->full_name }}
                                 </option>
                             @endforeach
                         </select>

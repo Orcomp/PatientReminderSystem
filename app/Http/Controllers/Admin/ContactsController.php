@@ -52,9 +52,11 @@ class ContactsController extends Controller
         $designation_types = \App\DesignationType::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
         $users = \App\User::get()->pluck('name', 'id')->prepend(trans('global.app_please_select'), '');
         $patients = \App\Patient::get()->pluck('full_name', 'id')->prepend(trans('global.app_please_select'), '');
-        $redirect_to = $request['redirect_to'] ?? null;
 
-        return view('admin.contacts.create', compact('contact_types', 'designation_types', 'users', 'patients', 'redirect_to'));
+        $redirect_to = $request->input('redirect_to');
+        $patient_id  = $request->input('patient_id');
+
+        return view('admin.contacts.create', compact('contact_types', 'designation_types', 'users', 'patients', 'redirect_to', 'patient_id'));
     }
 
     /**

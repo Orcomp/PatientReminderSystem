@@ -8,6 +8,7 @@ use App\Notifications\AppointmentsToday;
 use App\Settings;
 use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class SendAppointments extends Command
 {
@@ -34,14 +35,16 @@ class SendAppointments extends Command
     {
         parent::__construct();
         $this->first_reminder = NULL;
-        $first_reminder = Settings::where('key', 'first_reminder')->first();
-        if ($first_reminder) {
-            $this->first_reminder = $first_reminder->value;
-        }
         $this->second_reminder = NULL;
-        $second_reminder = Settings::where('key', 'second_reminder')->first();
-        if ($second_reminder) {
-            $this->second_reminder = $second_reminder->value;
+        if (Schema::hasTable('settings')) {
+            $first_reminder = Settings::where('key', 'first_reminder')->first();
+            if ($first_reminder) {
+                $this->first_reminder = $first_reminder->value;
+            }
+            $second_reminder = Settings::where('key', 'second_reminder')->first();
+            if ($second_reminder) {
+                $this->second_reminder = $second_reminder->value;
+            }
         }
     }
 

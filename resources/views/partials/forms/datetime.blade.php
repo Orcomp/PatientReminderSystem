@@ -7,8 +7,8 @@ $(function(){
     });
     $('.datetime').datetimepicker({
         format: "{{ config('app.datetime_format_moment') }}",
-        showClose: true,
         locale: "{{ App::getLocale() }}",
+        sideBySide: true,
     });
 });
 </script>

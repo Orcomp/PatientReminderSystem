@@ -250,6 +250,11 @@ return [
             'patient' => 'Select a patient',
             'contact' => 'Select a contacted contact',
         ],
+        'filters' => [
+            'staff' => 'All Staff',
+            'doctors' => 'All Doctors',
+            'nurses' => 'All Nurses',
+        ],
     ],
 
     'reschedule-reasons' => [
