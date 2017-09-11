@@ -1,0 +1,100 @@
+<?php
+Route::get('/', function () { return redirect()->route('auth.login'); });
+
+// Authentication Routes...
+$this->get('login', 'Auth\LoginController@showLoginForm')->name('auth.login');
+$this->post('login', 'Auth\LoginController@login')->name('auth.login');
+$this->post('logout', 'Auth\LoginController@logout')->name('auth.logout');
+
+// Change Password Routes...
+$this->get('change_password', 'Auth\ChangePasswordController@showChangePasswordForm')->name('auth.change_password');
+$this->patch('change_password', 'Auth\ChangePasswordController@changePassword')->name('auth.change_password');
+
+// Password Reset Routes...
+$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('auth.password.reset');
+$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('auth.password.reset');
+$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+$this->post('password/reset', 'Auth\ResetPasswordController@reset')->name('auth.password.reset');
+
+Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
+    Route::resource('permissions', 'Admin\PermissionsController');
+    Route::post('permissions_mass_destroy', ['uses' => 'Admin\PermissionsController@massDestroy', 'as' => 'permissions.mass_destroy']);
+    Route::resource('roles', 'Admin\RolesController');
+    Route::post('roles_mass_destroy', ['uses' => 'Admin\RolesController@massDestroy', 'as' => 'roles.mass_destroy']);
+    Route::resource('users', 'Admin\UsersController');
+    Route::post('users_mass_destroy', ['uses' => 'Admin\UsersController@massDestroy', 'as' => 'users.mass_destroy']);
+    Route::resource('user_actions', 'Admin\UserActionsController');
+    Route::resource('contact_types', 'Admin\ContactTypesController');
+    Route::post('contact_types_mass_destroy', ['uses' => 'Admin\ContactTypesController@massDestroy', 'as' => 'contact_types.mass_destroy']);
+    Route::post('contact_types_restore/{id}', ['uses' => 'Admin\ContactTypesController@restore', 'as' => 'contact_types.restore']);
+    Route::delete('contact_types_perma_del/{id}', ['uses' => 'Admin\ContactTypesController@perma_del', 'as' => 'contact_types.perma_del']);
+    Route::resource('designation_types', 'Admin\DesignationTypesController');
+    Route::post('designation_types_mass_destroy', ['uses' => 'Admin\DesignationTypesController@massDestroy', 'as' => 'designation_types.mass_destroy']);
+    Route::post('designation_types_restore/{id}', ['uses' => 'Admin\DesignationTypesController@restore', 'as' => 'designation_types.restore']);
+    Route::delete('designation_types_perma_del/{id}', ['uses' => 'Admin\DesignationTypesController@perma_del', 'as' => 'designation_types.perma_del']);
+    Route::resource('address_types', 'Admin\AddressTypesController');
+    Route::post('address_types_mass_destroy', ['uses' => 'Admin\AddressTypesController@massDestroy', 'as' => 'address_types.mass_destroy']);
+    Route::post('address_types_restore/{id}', ['uses' => 'Admin\AddressTypesController@restore', 'as' => 'address_types.restore']);
+    Route::delete('address_types_perma_del/{id}', ['uses' => 'Admin\AddressTypesController@perma_del', 'as' => 'address_types.perma_del']);
+    Route::resource('countries', 'Admin\CountriesController');
+    Route::post('countries_mass_destroy', ['uses' => 'Admin\CountriesController@massDestroy', 'as' => 'countries.mass_destroy']);
+    Route::post('countries_restore/{id}', ['uses' => 'Admin\CountriesController@restore', 'as' => 'countries.restore']);
+    Route::delete('countries_perma_del/{id}', ['uses' => 'Admin\CountriesController@perma_del', 'as' => 'countries.perma_del']);
+    Route::resource('states', 'Admin\StatesController');
+    Route::post('states_mass_destroy', ['uses' => 'Admin\StatesController@massDestroy', 'as' => 'states.mass_destroy']);
+    Route::post('states_restore/{id}', ['uses' => 'Admin\StatesController@restore', 'as' => 'states.restore']);
+    Route::delete('states_perma_del/{id}', ['uses' => 'Admin\StatesController@perma_del', 'as' => 'states.perma_del']);
+    Route::resource('cities', 'Admin\CitiesController');
+    Route::post('cities_mass_destroy', ['uses' => 'Admin\CitiesController@massDestroy', 'as' => 'cities.mass_destroy']);
+    Route::post('cities_restore/{id}', ['uses' => 'Admin\CitiesController@restore', 'as' => 'cities.restore']);
+    Route::delete('cities_perma_del/{id}', ['uses' => 'Admin\CitiesController@perma_del', 'as' => 'cities.perma_del']);
+    Route::resource('contacts', 'Admin\ContactsController');
+    Route::post('contacts_mass_destroy', ['uses' => 'Admin\ContactsController@massDestroy', 'as' => 'contacts.mass_destroy']);
+    Route::post('contacts_restore/{id}', ['uses' => 'Admin\ContactsController@restore', 'as' => 'contacts.restore']);
+    Route::delete('contacts_perma_del/{id}', ['uses' => 'Admin\ContactsController@perma_del', 'as' => 'contacts.perma_del']);
+    Route::resource('addresses', 'Admin\AddressesController');
+    Route::post('addresses_mass_destroy', ['uses' => 'Admin\AddressesController@massDestroy', 'as' => 'addresses.mass_destroy']);
+    Route::post('addresses_restore/{id}', ['uses' => 'Admin\AddressesController@restore', 'as' => 'addresses.restore']);
+    Route::delete('addresses_perma_del/{id}', ['uses' => 'Admin\AddressesController@perma_del', 'as' => 'addresses.perma_del']);
+    Route::resource('patients', 'Admin\PatientsController');
+    Route::post('patients_mass_destroy', ['uses' => 'Admin\PatientsController@massDestroy', 'as' => 'patients.mass_destroy']);
+    Route::post('patients_restore/{id}', ['uses' => 'Admin\PatientsController@restore', 'as' => 'patients.restore']);
+    Route::delete('patients_perma_del/{id}', ['uses' => 'Admin\PatientsController@perma_del', 'as' => 'patients.perma_del']);
+    Route::resource('diagnoses_types', 'Admin\DiagnosesTypesController');
+    Route::post('diagnoses_types_mass_destroy', ['uses' => 'Admin\DiagnosesTypesController@massDestroy', 'as' => 'diagnoses_types.mass_destroy']);
+    Route::post('diagnoses_types_restore/{id}', ['uses' => 'Admin\DiagnosesTypesController@restore', 'as' => 'diagnoses_types.restore']);
+    Route::delete('diagnoses_types_perma_del/{id}', ['uses' => 'Admin\DiagnosesTypesController@perma_del', 'as' => 'diagnoses_types.perma_del']);
+    Route::resource('diagnoses', 'Admin\DiagnosesController');
+    Route::post('diagnoses_mass_destroy', ['uses' => 'Admin\DiagnosesController@massDestroy', 'as' => 'diagnoses.mass_destroy']);
+    Route::post('diagnoses_restore/{id}', ['uses' => 'Admin\DiagnosesController@restore', 'as' => 'diagnoses.restore']);
+    Route::delete('diagnoses_perma_del/{id}', ['uses' => 'Admin\DiagnosesController@perma_del', 'as' => 'diagnoses.perma_del']);
+    Route::resource('treatment_types', 'Admin\TreatmentTypesController');
+    Route::post('treatment_types_mass_destroy', ['uses' => 'Admin\TreatmentTypesController@massDestroy', 'as' => 'treatment_types.mass_destroy']);
+    Route::post('treatment_types_restore/{id}', ['uses' => 'Admin\TreatmentTypesController@restore', 'as' => 'treatment_types.restore']);
+    Route::delete('treatment_types_perma_del/{id}', ['uses' => 'Admin\TreatmentTypesController@perma_del', 'as' => 'treatment_types.perma_del']);
+    Route::resource('treatment_stages', 'Admin\TreatmentStagesController');
+    Route::post('treatment_stages_mass_destroy', ['uses' => 'Admin\TreatmentStagesController@massDestroy', 'as' => 'treatment_stages.mass_destroy']);
+    Route::post('treatment_stages_restore/{id}', ['uses' => 'Admin\TreatmentStagesController@restore', 'as' => 'treatment_stages.restore']);
+    Route::delete('treatment_stages_perma_del/{id}', ['uses' => 'Admin\TreatmentStagesController@perma_del', 'as' => 'treatment_stages.perma_del']);
+    Route::resource('treatments', 'Admin\TreatmentsController');
+    Route::post('treatments_mass_destroy', ['uses' => 'Admin\TreatmentsController@massDestroy', 'as' => 'treatments.mass_destroy']);
+    Route::post('treatments_restore/{id}', ['uses' => 'Admin\TreatmentsController@restore', 'as' => 'treatments.restore']);
+    Route::delete('treatments_perma_del/{id}', ['uses' => 'Admin\TreatmentsController@perma_del', 'as' => 'treatments.perma_del']);
+    Route::resource('appointments', 'Admin\AppointmentsController');
+    Route::post('appointments_mass_destroy', ['uses' => 'Admin\AppointmentsController@massDestroy', 'as' => 'appointments.mass_destroy']);
+    Route::post('appointments_restore/{id}', ['uses' => 'Admin\AppointmentsController@restore', 'as' => 'appointments.restore']);
+    Route::delete('appointments_perma_del/{id}', ['uses' => 'Admin\AppointmentsController@perma_del', 'as' => 'appointments.perma_del']);
+    Route::resource('reschedule_reasons', 'Admin\RescheduleReasonsController');
+    Route::post('reschedule_reasons_mass_destroy', ['uses' => 'Admin\RescheduleReasonsController@massDestroy', 'as' => 'reschedule_reasons.mass_destroy']);
+    Route::post('reschedule_reasons_restore/{id}', ['uses' => 'Admin\RescheduleReasonsController@restore', 'as' => 'reschedule_reasons.restore']);
+    Route::delete('reschedule_reasons_perma_del/{id}', ['uses' => 'Admin\RescheduleReasonsController@perma_del', 'as' => 'reschedule_reasons.perma_del']);
+    Route::resource('appointment_logs', 'Admin\AppointmentLogsController');
+    Route::post('appointment_logs_mass_destroy', ['uses' => 'Admin\AppointmentLogsController@massDestroy', 'as' => 'appointment_logs.mass_destroy']);
+    Route::post('appointment_logs_restore/{id}', ['uses' => 'Admin\AppointmentLogsController@restore', 'as' => 'appointment_logs.restore']);
+    Route::delete('appointment_logs_perma_del/{id}', ['uses' => 'Admin\AppointmentLogsController@perma_del', 'as' => 'appointment_logs.perma_del']);
+    Route::resource('appointment_types', 'Admin\AppointmentTypesController');
+    Route::post('appointment_types_mass_destroy', ['uses' => 'Admin\AppointmentTypesController@massDestroy', 'as' => 'appointment_types.mass_destroy']);
+    Route::post('appointment_types_restore/{id}', ['uses' => 'Admin\AppointmentTypesController@restore', 'as' => 'appointment_types.restore']);
+    Route::delete('appointment_types_perma_del/{id}', ['uses' => 'Admin\AppointmentTypesController@perma_del', 'as' => 'appointment_types.perma_del']);
+    Route::resource('settings', 'Admin\SettingsController');
+});
