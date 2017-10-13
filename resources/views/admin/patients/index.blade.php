@@ -67,7 +67,7 @@
                                         <a href="{{ route('admin.treatments.index',['patient_id' => $patient->id]) }}" class="btn btn-xs btn-primary">@lang('global.treatments.title')</a>
                                     @endcan
                                     @can('appointment_view')
-                                        <a href="{{ route('admin.appointments.index',['patient_id' => $patient->id]) }}" class="btn btn-xs btn-primary">@lang('global.appointments.title')</a>
+                                        <a href="{{ route('admin.appointments.index',['patient_id' => $patient->id, 'view' => 'list']) }}" class="btn btn-xs btn-primary">@lang('global.appointments.title')</a>
                                     @endcan
                                 </td>
                                 @if( request('show_deleted') == 1 )

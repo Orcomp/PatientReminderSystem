@@ -20,7 +20,7 @@ class Address extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['street', 'note', 'contact_id', 'city_id', 'state_id', 'country_id', 'address_type_id'];
+    protected $fillable = ['street', 'note', 'contact_id', 'patient_id', 'city_id', 'state_id', 'country_id', 'address_type_id'];
 
     public static function boot()
     {
@@ -76,12 +76,23 @@ class Address extends Model
 
     public function getContactFullNameAttribute()
     {
-        return $this->contact->full_name;
+        if ($this->contact)
+            return $this->contact->full_name;
+
+        if ($this->patient)
+            return $this->patient->full_name;
+
+        return null;
     }
 
     public function contact()
     {
         return $this->belongsTo(Contact::class, 'contact_id')->withTrashed();
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id')->withTrashed();
     }
 
     public function city()

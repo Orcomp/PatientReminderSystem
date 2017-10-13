@@ -6,6 +6,7 @@ use App\Appointment;
 use App\AppointmentLog;
 use App\Patient;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -46,7 +47,30 @@ class AppointmentsController extends Controller
             $staff_filter = array_merge($staff_filter, $all_doctors);
         }
 
-        $appointments = Appointment::ofPatient()->whereIn('user_id', $staff_filter)->get();
+        $appointments = '';
+        $startDate = Carbon::now()->format(config('app.date_format'));
+        $endDate = Carbon::now()->addDays(30)->format(config('app.date_format'));
+
+        if ($request->input('daterange')) {
+            try {
+                $daterange = explode(' - ', $request->input('daterange'));
+                $startDate = Carbon::createFromFormat('Y-m-d', $daterange[0])->format(config('app.date_format'));
+                $endDate = Carbon::createFromFormat('Y-m-d', $daterange[1])->format(config('app.date_format'));
+            } catch (\Exception $e) {
+                $errors = [ trans('validation.date_format', ['attribute' => 'daterange', 'format' => config('app.date_format')]) ];
+            }
+        }
+
+        if ($request->input('view') == 'list' && is_null($request->input('daterange'))) {
+            $appointments = Appointment::ofPatient()
+                ->whereIn('user_id', $staff_filter)
+                ->get();
+        } else {
+            $appointments = Appointment::ofPatient()
+                ->whereIn('user_id', $staff_filter)
+                ->whereBetween('appointment_time', [$startDate, $endDate])
+                ->get();
+        }
 
         $calendar_events = [];
         foreach ($appointments as $appointment) {
@@ -62,7 +86,7 @@ class AppointmentsController extends Controller
         $patient = Patient::find($request->input('patient_id'));
 
         return view('admin.appointments.index', compact('appointments', 'patient', 'calendar_events',
-            'users', 'staff_filter'));
+            'users', 'staff_filter'))->withErrors(isset($errors) ? $errors : []);
     }
 
     /**

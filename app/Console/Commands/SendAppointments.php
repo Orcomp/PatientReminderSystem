@@ -34,8 +34,9 @@ class SendAppointments extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->first_reminder = NULL;
-        $this->second_reminder = NULL;
+        $this->first_reminder    = NULL;
+        $this->second_reminder   = NULL;
+        $this->look_ahead_window = NULL;
         if (Schema::hasTable('settings')) {
             $first_reminder = Settings::where('key', 'first_reminder')->first();
             if ($first_reminder) {
@@ -44,6 +45,10 @@ class SendAppointments extends Command
             $second_reminder = Settings::where('key', 'second_reminder')->first();
             if ($second_reminder) {
                 $this->second_reminder = $second_reminder->value;
+            }
+            $look_ahead_window = Settings::where('key', 'look_ahead_window')->first();
+            if ($look_ahead_window) {
+                $this->look_ahead_window = $look_ahead_window->value;
             }
         }
     }
@@ -55,13 +60,14 @@ class SendAppointments extends Command
      */
     public function handle()
     {
-        $settings = Settings::all();
+        \Log::info('Starting the appointment sending...');
 
         $appointments = collect([
             $this->face_to_face_today(),
             $this->over_the_phone_today(),
             $this->remind_unconfirmed()
         ])->collapse();
+        \Log::info('Appointments found: ' . $appointments->count());
 
         $users = $appointments->groupBy('user_id');
         foreach ($users as $user_id => $appointments) {
@@ -70,31 +76,32 @@ class SendAppointments extends Command
             foreach ($send_types as $send_type => $appointments) {
                 switch ($send_type) {
                     case 'facetoface':
-                        $data .= "**Face-to-face today:**<br>";
+                        $data .= "**".trans('mail.appointments.face').":**<br>";
                         break;
 
                     case 'phone':
-                        $data .= "**Over-the-phone today:**<br>";
+                        $data .= "**".trans('mail.appointments.phone').":**<br>";
                         break;
 
                     case 'unconfirmed':
-                        $data .= "**Unconfirmed:**<br>";
+                        $data .= "**".trans('mail.appointments.unconfirmed').":**<br>";
                         break;
 
                     default:
                         break;
                 }
                 foreach ($appointments as $appointment) {
-                    $data .= $appointment->appointment_time . ' ' . $appointment->patient->full_name . "<br>";
+                    $data .= $appointment->appointment_time . ' <a href="'.route('admin.patients.show', $appointment->patient_id).'">' . $appointment->patient->full_name . "</a><br>";
                 }
             }
-
             $user = User::findOrFail($user_id);
-            $user->notify(new AppointmentsToday($user->full_name, $data));
+            $upcoming = $this->upcoming_appointments($user_id);
+            $user->notify(new AppointmentsToday($user, $data, $upcoming));
         }
+        \Log::info('Finished the appointment sending.');
     }
 
-    public function face_to_face_today() {
+    private function face_to_face_today() {
         $appointments = Appointment::whereDate('appointment_time', '=', Carbon::today()->toDateString())
             ->where('appointment_type_id', 1)
             ->whereNotNull('confirmed_at')
@@ -105,7 +112,7 @@ class SendAppointments extends Command
         return $appointments;
     }
 
-    public function over_the_phone_today() {
+    private function over_the_phone_today() {
         $appointments = Appointment::where('appointment_type_id', 2)
             ->whereDate('appointment_time', '=', Carbon::today()->toDateString())
             ->get()
@@ -115,7 +122,7 @@ class SendAppointments extends Command
         return $appointments;
     }
 
-    public function remind_unconfirmed() {
+    private function remind_unconfirmed() {
         if (is_null($this->first_reminder) || is_null($this->second_reminder)) {
             return [];
         }
@@ -130,5 +137,17 @@ class SendAppointments extends Command
             });
 
         return $appointments;
+    }
+
+    private function upcoming_appointments($user_id) {
+        return Appointment::where('user_id', $user_id)
+                ->whereBetween('appointment_time',[
+                    Carbon::today()->toDateString(), Carbon::today()->addDays($this->look_ahead_window)->toDateString()
+                ])
+                ->get()
+                ->each(function($appointment){
+                    $appointment->diff = Carbon::today()->diffInDays(Carbon::createFromFormat('Y-m-d H:i', $appointment->appointment_time));
+                })
+                ->sortBy('appointment_time');
     }
 }

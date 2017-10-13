@@ -1,12 +1,7 @@
-@inject('request', 'Illuminate\Http\Request')
 @extends('layouts.app')
 
 @section('content')
     <h3 class="page-title">@lang('global.user-actions.title')</h3>
-    @can('user_action_create')
-    <p>
-    </p>
-    @endcan
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -35,7 +30,7 @@
                                 <td field-key='action_object'>{{ $user_action->action_object }}</td>
                                 <td>
                                     @can('user_action_view')
-                                        <a href="{{ route('admin.user_actions.show',[$user_action->id]) }}" class="btn btn-xs btn-primary">@lang('global.app_view')</a>
+                                        <a href="{{ route('admin.user_actions.show', $user_action->id) }}" class="btn btn-xs btn-primary">@lang('global.app_view')</a>
                                     @endcan
                                 </td>
                             </tr>

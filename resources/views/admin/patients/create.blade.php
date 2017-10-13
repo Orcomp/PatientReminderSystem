@@ -4,7 +4,7 @@
     <h3 class="page-title">@lang('global.patients.title')</h3>
     {!! Form::open(['method' => 'POST', 'route' => ['admin.patients.store']]) !!}
 
-    <div class="panel panel-default">
+    <div class="panel panel-default panel-patient">
         <div class="panel-heading">
             @lang('global.app_create')
         </div>
@@ -83,6 +83,8 @@
                     @endif
                 </div>
             </div>
+            {{-- patient address --}}
+            <button type="button" class="btn btn-primary btn-address"><span class="fa fa-plus"></span> @lang('global.addresses.address-button')</button>
         </div>
     </div>
 
@@ -113,6 +115,7 @@
 
         var i = 0; // contact form iterator
         var j = 0; // address form iterator, belongs to contact
+        var k = 0; // address form iterator, belongs to patient
         var countryData = {
             "country": [
                 @foreach($countries as $country)
@@ -139,6 +142,72 @@
                 @endforeach
             ]
         };
+
+        $('.panel-patient').on('click', '.btn-address', function(){
+            $this = $(this);
+            $this.before(`
+                <div class="box box-primary with-border">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][address_type_id]" class="control-label">
+                                    @lang('global.addresses.fields.address-type')
+                                </label>
+                                <select class="form-control select2" id="address[`+k+`][address_type_id]" name="address[`+k+`][address_type_id]">
+                                    @foreach($address_types as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][street]" class="control-label">
+                                    @lang('global.addresses.fields.street')
+                                </label>
+                                <input class="form-control" placeholder="" name="address[`+k+`][street]" type="text" id="address[`+k+`][street]">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][country_id]" class="control-label">
+                                    @lang('global.addresses.fields.country')
+                                </label>
+                                <select class="form-control select2 form-country-id" id="address[`+k+`][country_id]" name="address[`+k+`][country_id]">
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][state_id]" class="control-label">
+                                    @lang('global.addresses.fields.state')
+                                </label>
+                                <select class="form-control select2 form-state-id" id="address[`+k+`][state_id]" name="address[`+k+`][state_id]">
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][city_id]" class="control-label">
+                                    @lang('global.addresses.fields.city')
+                                </label>
+                                <select class="form-control select2 form-city-id" id="address[`+k+`][city_id]" name="address[`+k+`][city_id]">
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="address[`+k+`][note]" class="control-label">
+                                    @lang('global.addresses.fields.note')
+                                </label>
+                                <textarea class="form-control" placeholder="" name="address[`+k+`][note]" cols="50" rows="10" id="address[`+k+`][note]"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+            $('#address\\[' + k + '\\]\\[address_type_id\\]').select2();
+            $('#address\\[' + k + '\\]\\[country_id\\]').select2();
+            $('#address\\[' + k + '\\]\\[state_id\\]').select2();
+            $('#address\\[' + k + '\\]\\[city_id\\]').select2();
+            k++;
+        });
 
         // add new contact button action
 
@@ -263,14 +332,6 @@
                                 </label>
                                 <select class="form-control select2 form-state-id" id="contact[` + cfid + `][address][` + j + `][state_id]" name="contact[` + cfid + `][address][` + j + `][state_id]">
                                 </select>
-                                <input
-                                class="form-control"
-                                placeholder="@lang('global.addresses.placeholders.state')"
-                                name="contact[` + cfid + `][address][` + j + `][state]"
-                                type="text"
-                                id="contact[` + cfid + `][address][` + j + `][state]"
-                                style="margin-top: 4px;"
-                                >
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="contact[` + cfid + `][address][` + j + `][city_id]" class="control-label">
@@ -278,14 +339,6 @@
                                 </label>
                                 <select class="form-control select2 form-city-id" id="contact[` + cfid + `][address][` + j + `][city_id]" name="contact[` + cfid + `][address][` + j + `][city_id]">
                                 </select>
-                                <input
-                                class="form-control"
-                                placeholder="@lang('global.addresses.placeholders.city')"
-                                name="contact[` + cfid + `][address][` + j + `][city]"
-                                type="text"
-                                id="contact[` + cfid + `][address][` + j + `][city]"
-                                style="margin-top: 4px;"
-                                >
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="contact[` + cfid + `][address][` + j + `][note]" class="control-label">
@@ -302,9 +355,13 @@
             $('#contact\\[' + cfid + '\\]\\[address\\]\\[' + j + '\\]\\[country_id\\]').select2().trigger('change');
             $('#contact\\[' + cfid + '\\]\\[address\\]\\[' + j + '\\]\\[state_id\\]').select2({
                 placeholder: '@lang('global.addresses.placeholders.state-id')',
+                tags: true,
+                allowClear: true,
             });
             $('#contact\\[' + cfid + '\\]\\[address\\]\\[' + j + '\\]\\[city_id\\]').select2({
                 placeholder: '@lang('global.addresses.placeholders.city-id')',
+                tags: true,
+                allowClear: true,
             });
 
             j++;

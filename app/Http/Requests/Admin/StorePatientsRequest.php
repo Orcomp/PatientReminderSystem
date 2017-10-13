@@ -23,10 +23,12 @@ class StorePatientsRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'gender' => 'required',
-            'birth_date' => 'nullable|date_format:'.config('app.date_format'),
+            'first_name'                => 'required',
+            'last_name'                 => 'required',
+            'gender'                    => 'required',
+            'birth_date'                => 'nullable|date_format:'.config('app.date_format'),
+            'address'                   => 'required|array|min:1',
+            'address.*.address_type_id' => 'required|exists:address_types,id',
         ];
     }
 }

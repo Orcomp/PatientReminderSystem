@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('contacted_contact_id', trans('global.appointments.fields.contacted-contact'), ['class' => 'control-label']) !!}
-                    <a class="btn btn-xs btn-success" href="{{ route('admin.contacts.create') }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-xs btn-success btn-new-contact" href="{{ route('admin.contacts.create') }}">@lang('global.app_add_new')</a>
                     {!! Form::select('contacted_contact_id', ['' => ''], old('contacted_contact_id'), ['class' => 'form-control select2']) !!}
                     <p class="help-block"></p>
                     @if($errors->has('contacted_contact_id'))
@@ -127,7 +127,7 @@
 
         $('#patient_id').on('change', function(){
             var patient_id = $(this).val();
-
+            $('.btn-new-contact').attr('href', '{{ route('admin.contacts.create') }}?patient_id=' + patient_id);
             $('#contacted_contact_id').select2({
                 placeholder: '{{ trans('global.appointments.placeholders.contact') }}',
                 ajax: {

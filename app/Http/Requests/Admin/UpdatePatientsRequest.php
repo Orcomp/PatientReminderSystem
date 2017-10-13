@@ -23,11 +23,10 @@ class UpdatePatientsRequest extends FormRequest
     public function rules()
     {
         return [
-            
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'gender' => 'required',
-            'birth_date' => 'nullable|date_format:'.config('app.date_format'),
+            'first_name'                => 'required',
+            'last_name'                 => 'required',
+            'gender'                    => 'required',
+            'birth_date'                => 'nullable|date_format:'.config('app.date_format'),
         ];
     }
 }

@@ -42,3 +42,4 @@
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.min.css"/>
 <link rel="stylesheet" href="{{ url('adminlte/plugins/datetimepicker/bootstrap-datetimepicker.min.css') }}">
+<link rel="stylesheet" href="{{ url('adminlte/plugins/daterangepicker/daterangepicker.css') }}">

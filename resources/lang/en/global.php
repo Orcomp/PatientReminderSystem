@@ -149,6 +149,7 @@ return [
         'title' => 'Addresses',
         'created_at' => 'Time',
         'address-button' => 'Add New Address',
+        'not-found' => 'No addresses found',
         'fields' => [
             'contact'      => 'Contact',
             'street'       => 'Street',
@@ -161,8 +162,6 @@ return [
         'placeholders' => [
             'state-id' => 'Select a state',
             'city-id'  => 'Select a city',
-            'state'    => 'Enter state manually',
-            'city'     => 'Enter city manually',
         ],
     ],
 
@@ -242,18 +241,21 @@ return [
             'created-by'             => 'Created by',
             'appointment-type'       => 'Type',
         ],
-        'view-calendar' => 'Calendar view',
-        'view-list' => 'List view',
+        'view-calendar'   => 'Calendar view',
+        'view-list'       => 'List view',
         'filter-by-staff' => 'Filter by staff',
-        'filter' => 'Filter',
+        'filter-by-date'  => 'Filter by date',
+        'past-events'     => 'Past events',
+        'future-events'   => 'Future events',
+        'filter'          => 'Filter',
+        'filters' => [
+            'staff'   => 'All Staff',
+            'doctors' => 'All Doctors',
+            'nurses'  => 'All Nurses',
+        ],
         'placeholders' => [
             'patient' => 'Select a patient',
             'contact' => 'Select a contacted contact',
-        ],
-        'filters' => [
-            'staff' => 'All Staff',
-            'doctors' => 'All Doctors',
-            'nurses' => 'All Nurses',
         ],
     ],
 
@@ -289,7 +291,7 @@ return [
         'title' => 'Settings',
         'created_at' => 'Time',
         'fields' => [
-            'key' => 'Key',
+            'key'   => 'Key',
             'value' => 'Value',
         ],
     ],

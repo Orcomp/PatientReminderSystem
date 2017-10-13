@@ -14,6 +14,7 @@ class SettingsSeed extends Seeder
         $items = [
             ['key' => 'first_reminder', 'value' => 5],
             ['key' => 'second_reminder', 'value' => 2],
+            ['key' => 'look_ahead_window', 'value' => 21]
         ];
 
         foreach ($items as $item) {

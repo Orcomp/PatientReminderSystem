@@ -66,4 +66,9 @@ class Patient extends Model
         return $this->first_name . ' ' . $this->last_name;
     }
 
+    public function addresses()
+    {
+        return $this->hasMany('App\Address')->withTrashed();
+    }
+
 }

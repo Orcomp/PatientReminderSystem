@@ -1,63 +1,20 @@
 @component('mail::message')
-{{-- Greeting --}}
-@if (! empty($greeting))
-# {{ $greeting }}
-@else
-@if ($level == 'error')
-# Whoops!
-@else
-# Hi {{ $full_name }}!
-@endif
-@endif
 
-{{-- Intro Lines --}}
-@foreach ($introLines as $line)
-{{ $line }}
-@endforeach
+# @lang('mail.appointments.greeting'), {{ $user->full_name }}!
 
-We have your appointments for today, check the list below:
+**@lang('mail.appointments.today'):**
 
 {!! $body !!}
 
-{{-- Action Button --}}
-@isset($actionText)
-<?php
-    switch ($level) {
-        case 'success':
-            $color = 'green';
-            break;
-        case 'error':
-            $color = 'red';
-            break;
-        default:
-            $color = 'blue';
-    }
-?>
-@component('mail::button', ['url' => $actionUrl, 'color' => $color])
-{{ $actionText }}
-@endcomponent
-@endisset
-
-
-
-{{-- Outro Lines --}}
-@foreach ($outroLines as $line)
-{{ $line }}
-
+**@lang('mail.appointments.upcoming')**
+@component('mail::table')
+| @lang('mail.appointments.table.datetime') | @lang('mail.appointments.table.days') | @lang('mail.appointments.table.patient') | @lang('mail.appointments.table.contact') |
+| - | :-: | - | - |
+@foreach ($upcoming as $appointment)
+| {{ $appointment->appointment_time }} | {{ $appointment->diff }} | [{{ $appointment->patient->full_name ?? '' }}]({{ route('admin.patients.show', $appointment->patient->id) }}) | {{ $appointment->contacted_contact->full_name ?? '' }} |
 @endforeach
-
-{{-- Salutation --}}
-@if (! empty($salutation))
-{{ $salutation }}
-@else
-Regards,<br>{{ config('app.name') }}
-@endif
-
-{{-- Subcopy --}}
-@isset($actionText)
-@component('mail::subcopy')
-If you’re having trouble clicking the "{{ $actionText }}" button, copy and paste the URL below
-into your web browser: [{{ $actionUrl }}]({{ $actionUrl }})
 @endcomponent
-@endisset
+
+@lang('mail.appointments.signature'),<br>{{ config('app.name') }}
+
 @endcomponent

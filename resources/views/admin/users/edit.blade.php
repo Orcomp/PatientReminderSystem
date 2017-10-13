@@ -321,9 +321,6 @@
                                     @lang('global.addresses.fields.country')
                                 </label>
                                 <select class="form-control select2 form-country-id" id="new_contact[` + cfid + `][address][` + j + `][country_id]" name="new_contact[` + cfid + `][address][` + j + `][country_id]">
-                                    <option value="" selected="selected">
-                                        @lang('global.addresses.select-placeholder')
-                                    </option>
                                     @foreach($countries as $country)
                                         <option value="{{ $country->id }}">{{ $country->name }}</option>
                                     @endforeach
@@ -394,9 +391,6 @@
                                     @lang('global.addresses.fields.country')
                                 </label>
                                 <select class="form-control select2 form-country-id" id="contact[` + cfid + `][new_address][` + j + `][country_id]" name="contact[` + cfid + `][new_address][` + j + `][country_id]">
-                                    <option value="" selected="selected">
-                                        @lang('global.addresses.select-placeholder')
-                                    </option>
                                     @foreach($countries as $country)
                                         <option value="{{ $country->id }}">{{ $country->name }}</option>
                                     @endforeach

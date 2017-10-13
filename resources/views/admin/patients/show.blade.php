@@ -31,6 +31,36 @@
                     </table>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <th>@lang('global.addresses.fields.address-type')</th>
+                            <th>@lang('global.addresses.fields.street')</th>
+                            <th>@lang('global.addresses.fields.city')</th>
+                            <th>@lang('global.addresses.fields.state')</th>
+                            <th>@lang('global.addresses.fields.country')</th>
+                            <th>@lang('global.addresses.fields.note')</th>
+                        </thead>
+                        <tbody>
+                            @forelse($patient->addresses as $address)
+                            <tr>
+                                <td>{{ $address->address_type->name }}</td>
+                                <td>{{ $address->street }}</td>
+                                <td>{{ $address->city ? $address->city->name : null }}</td>
+                                <td>{{ $address->state ? $address->state->name : null }}</td>
+                                <td>{{ $address->country ? $address->country->name : null }}</td>
+                                <td>{{ $address->note }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6">@lang('global.addresses.not-found')</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <a href="{{ route('admin.patients.index') }}" class="btn btn-default">@lang('global.app_back_to_list')</a>
         </div>
     </div>
@@ -42,6 +72,7 @@
                 <div class="panel-heading">
                     @lang('global.contacts.title')
                     <a class="btn btn-success btn-xs" href="{{ route('admin.contacts.create', ['redirect_to' => url()->current(), 'patient_id' => $patient->id]) }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-primary btn-xs" href="{{ route('admin.contacts.index',['patient_id' => $patient->id]) }}">@lang('global.app_view')</a>
                 </div>
                 <div class="panel-body">
                     @if (count($contacts) > 0)
@@ -83,6 +114,7 @@
                 <div class="panel-heading">
                     @lang('global.appointments.title')
                     <a class="btn btn-success btn-xs" href="{{ route('admin.appointments.create', ['redirect_to' => url()->current(), 'patient_id' => $patient->id]) }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-primary btn-xs" href="{{ route('admin.appointments.index',['patient_id' => $patient->id, 'view' => 'list']) }}">@lang('global.app_view')</a>
                 </div>
 
                 <div class="panel-body table-responsive">
@@ -133,6 +165,7 @@
                 <div class="panel-heading">
                     @lang('global.treatments.title')
                     <a class="btn btn-success btn-xs" href="{{ route('admin.treatments.create', ['redirect_to' => url()->current(), 'patient_id' => $patient->id]) }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-primary btn-xs" href="{{ route('admin.treatments.index',['patient_id' => $patient->id]) }}">@lang('global.app_view')</a>
                 </div>
 
                 <div class="panel-body table-responsive">
@@ -213,6 +246,7 @@
                 <div class="panel-heading">
                     @lang('global.diagnoses.title')
                     <a class="btn btn-success btn-xs" href="{{ route('admin.diagnoses.create', ['redirect_to' => url()->current(), 'patient_id' => $patient->id]) }}">@lang('global.app_add_new')</a>
+                    <a class="btn btn-primary btn-xs" href="{{ route('admin.diagnoses.index',['patient_id' => $patient->id]) }}">@lang('global.app_view')</a>
                 </div>
 
                 <div class="panel-body table-responsive">

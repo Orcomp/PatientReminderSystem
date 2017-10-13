@@ -14,6 +14,7 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('patient_id', trans('global.appointments.fields.patient'), ['class' => 'control-label required']) !!}
+                    <a class="btn btn-primary btn-xs" href="{{ route('admin.patients.show', $appointment->patient_id) }}">@lang('global.app_view')</a>
                     {!! Form::select('patient_id', $patients, old('patient_id'), ['class' => 'form-control select2', 'required' => '', 'disabled' => '']) !!}
                     {{ Form::hidden('patient_id', old('patient_id')) }}
                     <p class="help-block"></p>

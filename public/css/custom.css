@@ -2,3 +2,12 @@
     content: '*';
     padding-left: 4px;
 }
+
+.dt-buttons {
+    padding-left: 8px;
+}
+
+.dt-button {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}

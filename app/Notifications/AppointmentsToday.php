@@ -16,10 +16,11 @@ class AppointmentsToday extends Notification
      *
      * @return void
      */
-    public function __construct($full_name, $data)
+    public function __construct($user, $data, $upcoming)
     {
-        $this->data = $data;
-        $this->full_name = $full_name;
+        $this->data     = $data;
+        $this->user     = $user;
+        $this->upcoming = $upcoming;
     }
 
     /**
@@ -41,11 +42,12 @@ class AppointmentsToday extends Notification
      */
     public function toMail($notifiable)
     {
-        $full_name = $this->full_name;
-        $body = $this->data;
+        $user     = $this->user;
+        $body     = $this->data;
+        $upcoming = $this->upcoming;
         return (new MailMessage)
-            ->subject('Your appointments for today')
-            ->markdown('mail.appointments.today', compact('full_name', 'body'));
+            ->subject(trans('mail.appointments.subject'))
+            ->markdown('mail.appointments.today', compact('user', 'body', 'upcoming'));
     }
 
     /**

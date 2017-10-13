@@ -30,7 +30,6 @@ class PatientsController extends Controller
             return abort(401);
         }
 
-
         if (request('show_deleted') == 1) {
             if (! Gate::allows('patient_delete')) {
                 return abort(401);
@@ -76,9 +75,21 @@ class PatientsController extends Controller
             return abort(401);
         }
 
-        // dd($request['contact']);
-
         $patient = Patient::create($request->all());
+
+        if ($addresses = $request->input('address')) {
+            foreach ($addresses as $address) {
+                Address::create([
+                    'patient_id'      => $patient->id,
+                    'street'          => $address['street'] ?? null,
+                    'city_id'         => $address['city_id'] ?? null,
+                    'state_id'        => $address['state_id'] ?? null,
+                    'country_id'      => $address['country_id'] ?? null,
+                    'note'            => $address['note'] ?? null,
+                    'address_type_id' => $address['address_type_id'],
+                ]);
+            }
+        }
 
         if ($request->get('contact')) {
             $contacts = $request->get('contact');
@@ -98,28 +109,29 @@ class PatientsController extends Controller
                 if ($contact['address']) {
                     $addresses = $contact['address'];
                     foreach ($addresses as $address) {
-                        if (isset($address['city'])) {
+
+                        $city = $address['city_id'];
+                        if (isset($city) && ! is_numeric($city)) {
                             $city = City::create([
-                                'name'       => $address['city'],
+                                'name'       => $city,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $city = isset($address['city_id']) ? $address['city_id'] : null;
                         }
-                        if (isset($address['state'])) {
+
+                        $state = $address['state_id'];
+                        if (isset($state) && ! is_numeric($state)) {
                             $state = State::create([
-                                'name' => $address['state'],
+                                'name' => $state,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $state = isset($address['state_id']) ? $address['state_id'] : null;
                         }
+
                         Address::create([
                             'contact_id'      => $new_contact->id,
                             'street'          => $address['street'],
                             'city_id'         => $city,
                             'state_id'        => $state,
-                            'country_id'      => isset($address['country_id']) ? $address['country_id'] : null,
+                            'country_id'      => $address['country_id'],
                             'note'            => $address['note'],
                             'address_type_id' => $address['address_type_id'],
                         ]);
@@ -149,7 +161,7 @@ class PatientsController extends Controller
         }
 
         $enum_gender = Patient::$enum_gender;
-        $patient = Patient::findOrFail($id);
+        $patient = Patient::with('addresses')->findOrFail($id);
         $contacts = Contact::where('patient_id', $patient->id)->get();
         $contact_types = ContactType::where('name', '!=', 'Patient')->pluck('name', 'id');
         $address_types = AddressType::pluck('name', 'id');
@@ -187,6 +199,34 @@ class PatientsController extends Controller
         $patient = Patient::findOrFail($id);
         $patient->update($request->all());
 
+        if ($addresses = $request->input('address')) {
+            foreach ($addresses as $address) {
+                $existing_address = Address::findOrFail($address['id']);
+                $existing_address->update([
+                    'street'          => $address['street'] ?? null,
+                    'city_id'         => $address['city_id'] ?? null,
+                    'state_id'        => $address['state_id'] ?? null,
+                    'country_id'      => $address['country_id'] ?? null,
+                    'note'            => $address['note'] ?? null,
+                    'address_type_id' => $address['address_type_id'],
+                ]);
+            }
+        }
+
+        if ($addresses = $request->input('new_address')) {
+            foreach ($addresses as $address) {
+                Address::create([
+                    'patient_id'      => $patient->id,
+                    'street'          => $address['street'] ?? null,
+                    'city_id'         => $address['city_id'] ?? null,
+                    'state_id'        => $address['state_id'] ?? null,
+                    'country_id'      => $address['country_id'] ?? null,
+                    'note'            => $address['note'] ?? null,
+                    'address_type_id' => $address['address_type_id'],
+                ]);
+            }
+        }
+
         if ($request->get('contact')) {
             $contacts = $request->get('contact');
             foreach ($contacts as $contact) {
@@ -204,29 +244,30 @@ class PatientsController extends Controller
                 if (isset($contact['address'])) {
                     $addresses = $contact['address'];
                     foreach ($addresses as $address) {
-                        if (isset($address['city'])) {
+
+                        $city = $address['city_id'] ?? null;
+                        if (isset($city) && ! is_numeric($city)) {
                             $city = City::create([
-                                'name'       => $address['city'],
+                                'name'       => $city,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $city = isset($address['city_id']) ? $address['city_id'] : null;
                         }
-                        if (isset($address['state'])) {
+
+                        $state = $address['state_id'] ?? null;
+                        if (isset($state) && ! is_numeric($state)) {
                             $state = State::create([
-                                'name' => $address['state'],
+                                'name' => $state,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $state = isset($address['state_id']) ? $address['state_id'] : null;
                         }
+
                         $existing_address = Address::findOrFail($address['id']);
                         $existing_address->update([
                             'contact_id'      => $existing_contact->id,
                             'street'          => $address['street'],
                             'city_id'         => $city,
                             'state_id'        => $state,
-                            'country_id'      => isset($address['country_id']) ? $address['country_id'] : null,
+                            'country_id'      => $address['country_id'],
                             'note'            => $address['note'],
                             'address_type_id' => $address['address_type_id'],
                         ]);
@@ -237,28 +278,29 @@ class PatientsController extends Controller
                 if (isset($contact['new_address'])) {
                     $new_addresses = $contact['new_address'];
                     foreach ($new_addresses as $address) {
-                        if (isset($address['city'])) {
+
+                        $city = $address['city_id'];
+                        if (isset($city) && ! is_numeric($city)) {
                             $city = City::create([
-                                'name'       => $address['city'],
+                                'name'       => $city,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $city = isset($address['city_id']) ? $address['city_id'] : null;
                         }
-                        if (isset($address['state'])) {
+
+                        $state = $address['state_id'];
+                        if (isset($state) && ! is_numeric($state)) {
                             $state = State::create([
-                                'name' => $address['state'],
+                                'name' => $state,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $state = isset($address['state_id']) ? $address['state_id'] : null;
                         }
+
                         Address::create([
                             'contact_id'      => $existing_contact->id,
                             'street'          => $address['street'],
                             'city_id'         => $city,
                             'state_id'        => $state,
-                            'country_id'      => isset($address['country_id']) ? $address['country_id'] : null,
+                            'country_id'      => $address['country_id'],
                             'note'            => $address['note'],
                             'address_type_id' => $address['address_type_id'],
                         ]);
@@ -287,28 +329,29 @@ class PatientsController extends Controller
                 if (isset($contact['address'])) {
                     $new_addresses = $contact['address'];
                     foreach ($new_addresses as $address) {
-                        if (isset($address['city'])) {
+
+                        $city = $address['city_id'];
+                        if (isset($city) && ! is_numeric($city)) {
                             $city = City::create([
-                                'name'       => $address['city'],
+                                'name'       => $city,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $city = isset($address['city_id']) ? $address['city_id'] : null;
                         }
-                        if (isset($address['state'])) {
+
+                        $state = $address['state_id'];
+                        if (isset($state) && ! is_numeric($state) ) {
                             $state = State::create([
-                                'name' => $address['state'],
+                                'name' => $state,
                                 'country_id' => $address['country_id'],
                             ])->id;
-                        } else {
-                            $state = isset($address['state_id']) ? $address['state_id'] : null;
                         }
+
                         Address::create([
                             'contact_id'      => $new_contact->id,
                             'street'          => $address['street'],
                             'city_id'         => $city,
                             'state_id'        => $state,
-                            'country_id'      => isset($address['country_id']) ? $address['country_id'] : null,
+                            'country_id'      => $address['country_id'],
                             'note'            => $address['note'],
                             'address_type_id' => $address['address_type_id'],
                         ]);
@@ -337,7 +380,7 @@ class PatientsController extends Controller
         $appointments = \App\Appointment::where('patient_id', $id)->orderBy('id', 'desc')->get();
         $contacts = \App\Contact::where('patient_id', $id)->orderBy('id', 'desc')->get();
 
-        $patient = Patient::findOrFail($id);
+        $patient = Patient::with('addresses')->findOrFail($id);
 
         return view('admin.patients.show', compact('patient', 'diagnoses', 'treatments', 'appointments', 'contacts'));
     }
